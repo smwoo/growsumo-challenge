@@ -3,6 +3,16 @@ const list = document.getElementById('todo-list');
 
 // NOTE: These are all our globally scoped functions for interacting with the server
 // This function adds a new todo from the input
+function handleInputChange() {
+    const $input = $('input#todo-input');
+    if ($input.val()) {
+        $('button#make-button').attr("disabled", false);
+    }
+    else {
+        $('button#make-button').attr("disabled", true);
+    }
+}
+
 function add() {
     console.warn(event);
     const input = document.getElementById('todo-input');
@@ -30,3 +40,7 @@ function render(todo) {
 server.on('load', (todos) => {
     todos.forEach((todo) => render(todo));
 });
+
+window.onload = () => {
+    handleInputChange();
+}
