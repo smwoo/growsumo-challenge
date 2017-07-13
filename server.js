@@ -1,6 +1,8 @@
 const server = require('socket.io')();
+const express = require('express');
 const firstTodos = require('./data');
 const Todo = require('./todo');
+const path = require('path');
 
 server.on('connection', (client) => {
     // This is going to be our fake 'database' for this application
@@ -37,3 +39,16 @@ server.on('connection', (client) => {
 
 console.log('Waiting for clients to connect');
 server.listen(3003);
+
+const app = express();
+
+app.use(express.static('public'));
+
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Production Express server running at localhost:${PORT}`);
+});
