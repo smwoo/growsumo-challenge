@@ -41,6 +41,10 @@ server.on('load', (todos) => {
     todos.forEach((todo) => render(todo));
 });
 
+server.on('update', (todo) => {
+    render(todo);
+});
+
 window.onload = () => {
     handleInputChange();
 }

@@ -16,8 +16,14 @@ server.on('connection', (client) => {
     });
 
     // Sends a message to the client to reload all todos
-    const reloadTodos = () => {
+    const initialLoadTodos = () => {
         server.emit('load', DB);
+    }
+    // Send the DB downstream on connect
+    initialLoadTodos();
+
+    const updateTodos = (newTodo) => {
+        server.emit('update', newTodo);
     }
 
     // Accepts when a client makes a new todo
@@ -30,11 +36,10 @@ server.on('connection', (client) => {
 
         // Send the latest todos to the client
         // FIXME: This sends all todos every time, could this be more efficient?
-        reloadTodos();
+        updateTodos(newTodo);
     });
 
-    // Send the DB downstream on connect
-    reloadTodos();
+
 });
 
 console.log('Waiting for clients to connect');
