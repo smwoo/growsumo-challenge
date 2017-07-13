@@ -1,50 +1,54 @@
-const server = io('http://localhost:3003/');
-const list = document.getElementById('todo-list');
+var listApp = angular.module('listApp', []);
 
-// NOTE: These are all our globally scoped functions for interacting with the server
-// This function adds a new todo from the input
-function handleInputChange() {
-    const $input = $('input#todo-input');
-    if ($input.val()) {
-        $('button#make-button').attr("disabled", false);
-    }
-    else {
-        $('button#make-button').attr("disabled", true);
-    }
-}
+listApp.factory('server', function ($rootScope) {
+    var server = io('http://localhost:3003/');
+    return {
+        on: function (eventName, callback) {
+            server.on(eventName, function () {
+                var args = arguments;
+                $rootScope.$apply(function () {
+                    callback.apply(server, args);
+                });
+            });
+        },
+        emit: function (eventName, data, callback) {
+            server.emit(eventName, data, function () {
+                var args = arguments;
+                $rootScope.$apply(function () {
+                    if (callback) {
+                        callback.apply(server, args);
+                    }
+                });
+            })
+        }
+    };
+});
 
-function add() {
-    console.warn(event);
-    const input = document.getElementById('todo-input');
-
-    // Emit the new todo as some data to the server
-    server.emit('make', {
-        title: input.value,
+listApp.controller('ListController', ['$scope', 'server', function($scope, server) {
+    $scope.disableMakeButton = true;
+    $scope.todoList = [];
+    server.on('load', (todos) => {
+        $scope.todoList = todos;
     });
 
-    // Clear the input
-    input.value = '';
-    // TODO: refocus the element
-}
+    server.on('update', (todo) => {
+        $scope.todoList.push(todo);
+    });
 
-function render(todo) {
-    console.log(todo);
-    const listItem = document.createElement('li');
-    const listItemText = document.createTextNode(todo.title);
-    listItem.appendChild(listItemText);
-    list.append(listItem);
-}
+    $scope.add = (listTitle) => {
+        server.emit('make', {
+            title: listTitle,
+        });
 
-// NOTE: These are listeners for events from the server
-// This event is for (re)loading the entire list of todos from the server
-server.on('load', (todos) => {
-    todos.forEach((todo) => render(todo));
-});
+        $scope.newEntry = "";
+    }
 
-server.on('update', (todo) => {
-    render(todo);
-});
-
-window.onload = () => {
-    handleInputChange();
-}
+    $scope.handleInputChange = () => {
+        if ($scope.newEntry) {
+            $scope.disableMakeButton = false;
+        }
+        else {
+            $scope.disableMakeButton = true;
+        }
+    }
+}]);

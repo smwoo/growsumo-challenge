@@ -4,12 +4,16 @@
         <meta charset="utf-8">
         <title>TODO</title>
         <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.js"></script>
     </head>
-    <body>
-        <input id="todo-input" type="text" placeholder="Feed the cat" autofocus oninput="handleInputChange()">
-        <button id="make-button" type="button" onclick="add()">Make</button>
-        <ul id="todo-list"></ul>
+    <body data-ng-app="listApp">
+        <div data-ng-controller="ListController">
+            <input type="text" placeholder="Feed the cat" autofocus ng-model="newEntry" ng-change="handleInputChange()">
+            <button id="make-button" type="button" data-ng-click="add(newEntry)" ng-disabled="disableMakeButton">Make</button>
+            <ul id="todo-list">
+                <li data-ng-repeat="todo in todoList">{{todo.title}}</li>
+            </ul>
+        </div>
     </body>
-    <script type="text/javascript" src="./javascript/client.js" async></script>
+    <script type="text/javascript" src="./javascript/client.js"></script>
 </html>
