@@ -31,8 +31,24 @@ listApp.controller('ListController', ['$scope', 'server', function($scope, serve
         $scope.todoList = todos;
     });
 
-    server.on('update', (todo) => {
+    server.on('new', (todo) => {
+        console.log(todo);
         $scope.todoList.push(todo);
+    });
+
+    server.on('update', (todo) => {
+        const todoIndex = $scope.todoList.findIndex((t) => {
+            return t.unique_hash == todo.unique_hash;
+        });
+        $scope.todoList[todoIndex] = todo;
+    });
+
+    server.on('delete', (todo) => {
+        console.log(todo);
+        const todoIndex = $scope.todoList.findIndex((t) => {
+            return t.unique_hash == todo.unique_hash;
+        });
+        $scope.todoList.splice(todoIndex, 1);
     });
 
     $scope.add = (listTitle) => {
@@ -41,6 +57,7 @@ listApp.controller('ListController', ['$scope', 'server', function($scope, serve
         });
 
         $scope.newEntry = "";
+        $scope.disableMakeButton = true;
     }
 
     $scope.handleInputChange = () => {
@@ -50,5 +67,17 @@ listApp.controller('ListController', ['$scope', 'server', function($scope, serve
         else {
             $scope.disableMakeButton = true;
         }
+    }
+
+    $scope.handleCompleteToggle = (todo) => {
+        server.emit('toggle', todo);
+    }
+
+    $scope.getCompletionText = (isComplete) => {
+        return isComplete ? "Complete" : "Incomplete";
+    }
+
+    $scope.handleDelete = (todo) => {
+        server.emit('delete', todo);
     }
 }]);

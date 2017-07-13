@@ -20,8 +20,16 @@ server.on('connection', (client) => {
     // Send the DB downstream on connect
     initialLoadTodos();
 
-    const updateTodos = (newTodo) => {
-        server.emit('update', newTodo);
+    const createTodo = (newTodo) => {
+        server.emit('new', newTodo);
+    }
+
+    const updateTodo = (updatedTodo) => {
+        server.emit('update', updatedTodo);
+    }
+
+    const deleteTodo = (deletedTodo) => {
+        server.emit('delete', deletedTodo);
     }
 
     // Accepts when a client makes a new todo
@@ -32,10 +40,26 @@ server.on('connection', (client) => {
         // Push this newly created todo to our database
         DB.push(newTodo);
 
-        updateTodos(newTodo);
+        createTodo(newTodo);
     });
 
+    client.on('toggle', (todo) => {
+        updatedTodo = DB.find((t) => {
+            return t.unique_hash == todo.unique_hash;
+        })
+        updatedTodo.toggleCompleted()
 
+        updateTodo(updatedTodo)
+    });
+
+    client.on('delete', (todo) => {
+        index = DB.findIndex((t) => {
+            return t.unique_hash == todo.unique_hash;
+        })
+        deletedTodo = DB.splice(index, 1)[0];
+
+        deleteTodo(deletedTodo);
+    });
 });
 
 console.log('Waiting for clients to connect');

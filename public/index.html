@@ -11,7 +11,11 @@
             <input type="text" placeholder="Feed the cat" autofocus ng-model="newEntry" ng-change="handleInputChange()">
             <button id="make-button" type="button" data-ng-click="add(newEntry)" ng-disabled="disableMakeButton">Make</button>
             <ul id="todo-list">
-                <li data-ng-repeat="todo in todoList">{{todo.title}}</li>
+                <span data-ng-repeat="todo in todoList">
+                    <li>{{todo.title}}</li>
+                    <button ng-click="handleCompleteToggle(todo)">{{getCompletionText(todo.completed)}}</button>
+                    <button ng-click="handleDelete(todo)">Delete</button>
+                </span>
             </ul>
         </div>
     </body>
