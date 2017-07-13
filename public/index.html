@@ -9,18 +9,18 @@
     </head>
     <body data-ng-app="listApp">
         <div data-ng-controller="ListController">
-            <input type="text" placeholder="Feed the cat" autofocus ng-model="newEntry" ng-change="handleInputChange()">
-            <button id="make-button" type="button" data-ng-click="add(newEntry)" ng-disabled="disableMakeButton || disableAll">Make</button>
+            <input type="text" placeholder="Feed the cat" autofocus data-ng-model="newEntry" data-ng-change="handleInputChange()">
+            <button id="make-button" type="button" data-ng-click="add(newEntry)" data-ng-disabled="disableMakeButton || disableAll">Make</button>
             <ul id="todo-list">
                 <span data-ng-repeat="todo in todoList">
                     <li>{{todo.title}}</li>
-                    <button ng-disabled="disableAll" ng-click="handleCompleteToggle(todo)">{{getCompletionText(todo.completed)}}</button>
-                    <button ng-disabled="disableAll" ng-click="handleDelete(todo)">Delete</button>
+                    <button data-ng-disabled="disableAll" data-ng-click="handleCompleteToggle(todo)">{{getCompletionText(todo.completed)}}</button>
+                    <button data-ng-disabled="disableAll" data-ng-click="handleDelete(todo)">Delete</button>
                 </span>
             </ul>
-            <button ng-disabled="disableAll" ng-click="handleCompleteAll()">Complete All</button>
-            <button ng-disabled="disableAll" ng-click="handleDeleteAll()">Delete All</button>
-            <button ng-disabled="disableAll" ng-click="debugCloseSocket()">close Socket</button>
+            <button data-ng-disabled="disableAll" data-ng-click="handleCompleteAll()">Complete All</button>
+            <button data-ng-disabled="disableAll" data-ng-click="handleDeleteAll()">Delete All</button>
+            <button data-ng-disabled="disableAll" data-ng-click="debugCloseSocket()">close Socket</button>
         </div>
     </body>
     <script type="text/javascript" src="./javascript/client.js"></script>
