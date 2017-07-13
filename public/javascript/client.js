@@ -36,19 +36,22 @@ listApp.controller('ListController', ['$scope', 'server', function($scope, serve
         $scope.todoList.push(todo);
     });
 
-    server.on('update', (todo) => {
-        const todoIndex = $scope.todoList.findIndex((t) => {
-            return t.unique_hash == todo.unique_hash;
-        });
-        $scope.todoList[todoIndex] = todo;
+    server.on('update', (todos) => {
+        for (const todo of todos) {
+            const todoIndex = $scope.todoList.findIndex((t) => {
+                return t.unique_hash == todo.unique_hash;
+            });
+            $scope.todoList[todoIndex] = todo;
+        }
     });
 
-    server.on('delete', (todo) => {
-        console.log(todo);
-        const todoIndex = $scope.todoList.findIndex((t) => {
-            return t.unique_hash == todo.unique_hash;
-        });
-        $scope.todoList.splice(todoIndex, 1);
+    server.on('delete', (todos) => {
+        for (const todo in todos) {
+            const todoIndex = $scope.todoList.findIndex((t) => {
+                return t.unique_hash == todo.unique_hash;
+            });
+            $scope.todoList.splice(todoIndex, 1);
+        }
     });
 
     $scope.add = (listTitle) => {
@@ -78,6 +81,14 @@ listApp.controller('ListController', ['$scope', 'server', function($scope, serve
     }
 
     $scope.handleDelete = (todo) => {
-        server.emit('delete', todo);
+        server.emit('delete', [todo]);
+    }
+
+    $scope.handleCompleteAll = () => {
+        server.emit('completeAll', $scope.todoList);
+    }
+
+    $scope.handleDeleteAll = () => {
+        server.emit('delete', $scope.todoList);
     }
 }]);

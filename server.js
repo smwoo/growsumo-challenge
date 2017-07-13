@@ -24,12 +24,12 @@ server.on('connection', (client) => {
         server.emit('new', newTodo);
     }
 
-    const updateTodo = (updatedTodo) => {
-        server.emit('update', updatedTodo);
+    const updateTodos = (updatedTodos) => {
+        server.emit('update', updatedTodos);
     }
 
-    const deleteTodo = (deletedTodo) => {
-        server.emit('delete', deletedTodo);
+    const deleteTodo = (deletedTodos) => {
+        server.emit('delete', deletedTodos);
     }
 
     // Accepts when a client makes a new todo
@@ -49,16 +49,33 @@ server.on('connection', (client) => {
         })
         updatedTodo.toggleCompleted()
 
-        updateTodo(updatedTodo)
+        updateTodos([updatedTodo])
     });
 
-    client.on('delete', (todo) => {
-        index = DB.findIndex((t) => {
-            return t.unique_hash == todo.unique_hash;
-        })
-        deletedTodo = DB.splice(index, 1)[0];
+    client.on('delete', (todos) => {
+        const deletedTodos = [];
+        for (const todo of todos) {
+            index = DB.findIndex((t) => {
+                return t.unique_hash == todo.unique_hash;
+            })
+            if (index > -1) {
+                deletedTodos.push(DB.splice(index, 1)[0]);
+            }
+        }
+        deleteTodo(deletedTodos);
+    });
 
-        deleteTodo(deletedTodo);
+    client.on('completeAll', (todos) => {
+        const updatedTodos = [];
+        for (todo of todos) {
+            updatedTodo = DB.find((t) => {
+                return t.unique_hash == todo.unique_hash;
+            })
+            updatedTodo.complete()
+
+            updatedTodos.push(updatedTodo);
+        }
+        updateTodos(updatedTodos)
     });
 });
 
