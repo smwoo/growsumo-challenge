@@ -1,4 +1,4 @@
-var listApp = angular.module('listApp', []);
+var listApp = angular.module('listApp', ['ngCookies']);
 
 listApp.factory('server', function ($rootScope) {
     var server = io('http://localhost:3003/');
@@ -24,16 +24,30 @@ listApp.factory('server', function ($rootScope) {
     };
 });
 
-listApp.controller('ListController', ['$scope', 'server', function($scope, server) {
+listApp.factory('listCache', function($cacheFactory) {
+    return $cacheFactory('listData');
+});
+
+listApp.controller('ListController', [
+                   '$scope', 'server', '$cookies',
+                   function($scope, server, $cookies) {
     $scope.disableMakeButton = true;
+    $scope.disableAll = false;
     $scope.todoList = [];
+
+    storeCache = () => {
+        $cookies.put('listData', JSON.stringify($scope.todoList));
+    }
+
     server.on('load', (todos) => {
         $scope.todoList = todos;
+        storeCache()
     });
 
     server.on('new', (todo) => {
         console.log(todo);
         $scope.todoList.push(todo);
+        storeCache()
     });
 
     server.on('update', (todos) => {
@@ -43,6 +57,7 @@ listApp.controller('ListController', ['$scope', 'server', function($scope, serve
             });
             $scope.todoList[todoIndex] = todo;
         }
+        storeCache()
     });
 
     server.on('delete', (todos) => {
@@ -52,7 +67,18 @@ listApp.controller('ListController', ['$scope', 'server', function($scope, serve
             });
             $scope.todoList.splice(todoIndex, 1);
         }
+        storeCache()
     });
+
+    server.on('connect_error', () => {
+        $scope.todoList = JSON.parse($cookies.get('listData'));
+        $scope.disableAll = true;
+    })
+
+    server.on('disconnect', () => {
+        $scope.todoList = JSON.parse($cookies.get('listData'));
+        $scope.disableAll = true;
+    })
 
     $scope.add = (listTitle) => {
         server.emit('make', {
@@ -90,5 +116,9 @@ listApp.controller('ListController', ['$scope', 'server', function($scope, serve
 
     $scope.handleDeleteAll = () => {
         server.emit('delete', $scope.todoList);
+    }
+
+    $scope.debugCloseSocket = () => {
+        server.emit('dc');
     }
 }]);

@@ -77,6 +77,10 @@ server.on('connection', (client) => {
         }
         updateTodos(updatedTodos)
     });
+
+    client.on('dc', () => {
+        server.close();
+    });
 });
 
 console.log('Waiting for clients to connect');
@@ -85,6 +89,7 @@ server.listen(3003);
 const app = express();
 
 app.use(express.static('public'));
+app.use('/angularCookies', express.static(path.join(__dirname, 'node_modules/angular-cookies')));
 
 app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
