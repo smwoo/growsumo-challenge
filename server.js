@@ -6,7 +6,7 @@ const path = require('path');
 
 const DB = firstTodos.map(t =>
   // Form new Todo objects
-  new Todo(t.title)
+  new Todo(t.title),
 );
 
 server.on('connection', (client) => {
@@ -44,15 +44,6 @@ server.on('connection', (client) => {
     createTodo(newTodo);
   });
 
-  // accepts when a client wants to toggle a task's completion
-  client.on('toggle', (todo) => {
-    const updatedTodo = DB.find(t => t.unique_hash === todo.unique_hash);
-    updatedTodo.toggleCompleted();
-
-    // send all updated tasks back to clients
-    updateTodos([updatedTodo]);
-  });
-
   // when a client wishes to delete a task(s)
   client.on('delete', (todos) => {
     const deletedTodos = [];
@@ -68,7 +59,7 @@ server.on('connection', (client) => {
   });
 
   // when a client wishes to set all tasks to complete
-  client.on('completeAll', (todos) => {
+  client.on('complete', (todos) => {
     const updatedTodos = [];
     for (const todo of todos) {
       const updatedTodo = DB.find(t => t.unique_hash === todo.unique_hash);

@@ -1,27 +1,45 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>TODO</title>
-        <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.js"></script>
-        <script src="/angularCookies/angular-cookies.min.js"></script>
-    </head>
-    <body data-ng-app="listApp">
-        <div data-ng-controller="ListController">
-            <input type="text" placeholder="Feed the cat" autofocus data-ng-model="newEntry" data-ng-change="handleInputChange()">
-            <button id="make-button" type="button" data-ng-click="add(newEntry)" data-ng-disabled="disableMakeButton || disableAll">Make</button>
-            <ul id="todo-list">
-                <span data-ng-repeat="todo in todoList">
-                    <li>{{todo.title}}</li>
-                    <button data-ng-disabled="disableAll" data-ng-click="handleCompleteToggle(todo)">{{getCompletionText(todo.completed)}}</button>
-                    <button data-ng-disabled="disableAll" data-ng-click="handleDelete(todo)">Delete</button>
-                </span>
-            </ul>
-            <button data-ng-disabled="disableAll" data-ng-click="handleCompleteAll()">Complete All</button>
-            <button data-ng-disabled="disableAll" data-ng-click="handleDeleteAll()">Delete All</button>
-            <button data-ng-disabled="disableAll" data-ng-click="debugCloseSocket()">close Socket</button>
+  <head>
+    <meta charset="utf-8">
+    <title>TODO</title>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.js"></script>
+    <script src="/angularCookies/angular-cookies.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/index.css">
+  </head>
+  <body data-ng-app="listApp">
+    <div data-ng-controller="ListController" class="container">
+      <div class="row">
+        <h1 class="text-center">Todo List</h1>
+      </div>
+      <div class="row">
+        <div class="input-group">
+          <input id="title-input" class="form-control" type="text" placeholder="Feed the cat" autofocus data-ng-model="newEntry" data-ng-change="handleInputChange()">
+          <span class="input-group-btn"><button id="make-button" type="button" data-ng-click="add(newEntry)" data-ng-disabled="disableMakeButton || disableAll" class="btn btn-default">Make</button></span>
         </div>
-    </body>
-    <script type="text/javascript" src="./javascript/client.js"></script>
+      </div>
+      <div class="row">
+        <ul id="todo-list" class="list-group">
+          <div data-ng-repeat="todo in todoList">
+            <li ng-class="isCompleted(todo)" class="list-group-item col-md-10">{{todo.title}}</li>
+            <div class="btn-group col-md-2">
+              <button class="btn btn-default" data-ng-disabled="disableAll" data-ng-click="handleComplete(todo)"><span class="glyphicon glyphicon-ok"></span></button>
+              <button class="btn btn-default" data-ng-disabled="disableAll" data-ng-click="handleDelete(todo)"><span class="glyphicon glyphicon-trash"></span></button>
+            </div>
+          </div>
+        </ul>
+      </div>
+      <div class="row">
+        <div class="btn-group">
+          <button class="btn btn-default" data-ng-disabled="disableAll" data-ng-click="handleCompleteAll()">Complete All</button>
+          <button class="btn btn-default" data-ng-disabled="disableAll" data-ng-click="handleDeleteAll()">Delete All</button>
+          <button class="btn btn-default" data-ng-disabled="disableAll" data-ng-click="debugCloseSocket()">close Socket</button>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script type="text/javascript" src="./javascript/client.js"></script>
 </html>

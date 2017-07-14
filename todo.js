@@ -7,10 +7,6 @@ module.exports = class Todo {
     this.completed = false;
   }
 
-  toggleCompleted() {
-    this.completed = !this.completed;
-  }
-
   complete() {
     this.completed = true;
   }

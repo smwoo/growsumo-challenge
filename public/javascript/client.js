@@ -58,6 +58,7 @@ listApp.controller('ListController', [
         const todoIndex = $scope.todoList.findIndex(t => t.unique_hash === todo.unique_hash);
         $scope.todoList[todoIndex] = todo;
       }
+
       storeCache();
     });
 
@@ -91,6 +92,7 @@ listApp.controller('ListController', [
 
       $scope.newEntry = '';
       $scope.disableMakeButton = true;
+      window.document.getElementById('title-input').focus();
     };
 
     // handler to disable make button when input is empty
@@ -103,8 +105,8 @@ listApp.controller('ListController', [
     };
 
     // handler to send completion toggle request to server
-    $scope.handleCompleteToggle = (todo) => {
-      server.emit('toggle', todo);
+    $scope.handleComplete = (todo) => {
+      server.emit('complete', [todo]);
     };
 
     // helper method to get text for completion button depending on completion status
@@ -117,7 +119,7 @@ listApp.controller('ListController', [
 
     // handler to send complete all tasks event to server
     $scope.handleCompleteAll = () => {
-      server.emit('completeAll', $scope.todoList);
+      server.emit('complete', $scope.todoList);
     };
 
     // handler to send delete all tasks event to server
@@ -129,4 +131,6 @@ listApp.controller('ListController', [
     $scope.debugCloseSocket = () => {
       server.emit('dc');
     };
+
+    $scope.isCompleted = todo => (todo.completed ? 'strikethrough' : '');
   }]);
